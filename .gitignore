@@ -4,3 +4,4 @@ models/footprint_model.tflite
 models/training_metadata.pkl
 models/training_log.csv
 /run.log
+/src/run.log
