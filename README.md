@@ -44,6 +44,9 @@ footprint-analysis/
 │   ├── footprint_model.h5    # 训练好的Keras模型
 │   └── preprocessor.pkl      # 数据预处理管道
 │
+├── reports/                  # 可视化输出
+│   └── model_performance.png # 模型评估可视化
+│ 
 ├── src/                      # 源代码
 │   ├── data_preparation.py   # 数据生成与增强
 │   ├── model_training.py     # 模型构建与训练
