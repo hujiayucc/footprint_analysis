@@ -1,7 +1,7 @@
 # 犯罪嫌疑人脚印智能分析系统
 
-![Python Version](https://img.shields.io/badge/Python-3.9%2B-blue)
-![TensorFlow Version](https://img.shields.io/badge/TensorFlow-2.12%2B-orange)
+![Python Version](https://img.shields.io/badge/Python-3.12%2B-blue)
+![TensorFlow Version](https://img.shields.io/badge/TensorFlow-2.19%2B-orange)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 基于机器学习与生物力学分析的刑侦辅助系统，通过犯罪现场脚印数据预测嫌疑人的生理特征和步态特征。
