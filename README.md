@@ -62,8 +62,8 @@ footprint-analysis/
 ## 快速开始
 
 ### 环境要求
-- Python 3.9+
-- TensorFlow 2.12+
+- Python 3.12+
+- TensorFlow 2.19+
 - 内存 ≥8GB
 - 磁盘空间 ≥1GB
 

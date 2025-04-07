@@ -1,9 +1,9 @@
-numpy==1.23.5
-pandas==1.5.3
-scikit-learn==1.2.2
-tensorflow==2.12.0
-shap==0.42.1
-flask==2.3.2
-joblib==1.2.0
-matplotlib==3.7.5
+numpy==1.26.4
+pandas==2.2.3
+scikit-learn==1.6.1
+tensorflow==2.19.0
+shap==0.47.1
+flask==2.3.3
+joblib==1.4.2
+matplotlib==3.10.1
 seaborn==0.13.2

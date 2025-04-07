@@ -183,8 +183,7 @@ def train_model():
                 filepath=os.path.join(MODEL_DIR, "footprint_model.h5"),
                 monitor="val_classification_accuracy",
                 mode="max",
-                save_best_only=True,
-                save_format="h5"
+                save_best_only=True
             ),
             tf.keras.callbacks.CSVLogger(
                 os.path.join(MODEL_DIR, "training_log.csv")
