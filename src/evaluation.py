@@ -24,7 +24,7 @@ logging.basicConfig(
 
 # ================== 路径配置 ==================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-MODEL_PATH = os.path.join(BASE_DIR, "models", "footprint_model.h5")
+MODEL_PATH = os.path.join(BASE_DIR, "models", "footprint_model.keras")
 PREPROCESSOR_PATH = os.path.join(BASE_DIR, "models", "preprocessor.pkl")
 DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "footprint_data.csv")
 REPORT_DIR = os.path.join(BASE_DIR, "reports")

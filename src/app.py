@@ -14,7 +14,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 # 构建项目根目录路径
 project_root = os.path.dirname(current_dir)
 # 模型文件路径
-model_path = os.path.join(project_root, "models", "footprint_model.h5")
+model_path = os.path.join(project_root, "models", "footprint_model.keras")
 preprocessor_path = os.path.join(project_root, "models", "preprocessor.pkl")
 
 # 加载模型和预处理器

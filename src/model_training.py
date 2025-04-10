@@ -106,20 +106,25 @@ def build_dynamic_model(input_shape_cat, input_shape_num, model_cfg):
             outputs=[reg_output, cls_output]
         )
         
-        # 混合精度优化
-        tf.keras.mixed_precision.set_global_policy("mixed_float16")
+        # 混合精度优化（添加异常处理）
+        try:
+            tf.keras.mixed_precision.set_global_policy("mixed_float16")
+        except RuntimeError as e:
+            logging.warning(f"⚠️ 混合精度设置失败: {str(e)}（可能策略已初始化）")
         
+        # 修改后的编译配置
         model.compile(
             optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
             loss={
-                "regression": "mse",
+                "regression": tf.keras.losses.MeanSquaredError(),  # 使用对象代替字符串
                 "classification": "sparse_categorical_crossentropy"
             },
             metrics={
-                "regression": ["mae"],
+                "regression": [tf.keras.metrics.MeanAbsoluteError(name="mae")],  # 显式定义指标
                 "classification": ["accuracy"]
             }
         )
+        
         logging.info(f"✅ 动态模型构建成功 | 隐藏层: {model_cfg['num_layers']}x{model_cfg['hidden_units']}")
         return model
     except Exception as e:
@@ -180,10 +185,11 @@ def train_model():
                 restore_best_weights=True
             ),
             tf.keras.callbacks.ModelCheckpoint(
-                filepath=os.path.join(MODEL_DIR, "footprint_model.h5"),
+                filepath=os.path.join(MODEL_DIR, "footprint_model.keras"),
                 monitor="val_classification_accuracy",
                 mode="max",
-                save_best_only=True
+                save_best_only=True,
+                save_weights_only=False
             ),
             tf.keras.callbacks.CSVLogger(
                 os.path.join(MODEL_DIR, "training_log.csv")
@@ -231,7 +237,7 @@ def train_model():
         logging.info("🏆 最终训练报告:")
         logging.info(f"最佳验证准确率: {history.history['val_classification_accuracy'][best_epoch]:.2%}")
         logging.info(f"回归任务MAE: {history.history['regression_mae'][best_epoch]:.2f}")
-        logging.info(f"模型文件: {os.path.join(MODEL_DIR, 'footprint_model.h5')}")
+        logging.info(f"模型文件: {os.path.join(MODEL_DIR, 'footprint_model.keras')}")
         logging.info(f"预处理器文件: {os.path.join(MODEL_DIR, 'preprocessor.pkl')}")
         logging.info(f"训练元数据: {os.path.join(MODEL_DIR, 'training_metadata.pkl')}")
 
