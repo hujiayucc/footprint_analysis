@@ -1,6 +1,6 @@
 # app.py
 import os
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, render_template, url_for
 import joblib
 import pandas as pd
 import numpy as np
@@ -50,7 +50,8 @@ def predict():
 
 @app.route('/')
 def home_page():
-    return render_template('index.html')
+    api_url = url_for('predict', _external=True)
+    return render_template('index.html', api_url=api_url)
 
 if __name__ == '__main__':
     debug = True

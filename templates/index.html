@@ -323,7 +323,7 @@
             };
 
             try {
-                const response = await fetch('http://185.244.0.122:5000/predict', {
+                const response = await fetch("{{ api_url }}", {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
