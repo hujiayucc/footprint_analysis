@@ -34,6 +34,7 @@
 
 ```plaintext
 footprint-analysis/
+│
 ├── data/                     # 数据存储
 │   └── raw/                  # 原始数据（案件采集数据）
 │
@@ -50,9 +51,9 @@ footprint-analysis/
 ├── src/                      # 源代码
 │   ├── data_preparation.py   # 数据生成与增强
 │   ├── model_training.py     # 模型构建与训练
-│   ├── evaluation.py         # 模型评估与解释
-│   └── app.py                # Flask API服务
+│   └── evaluation.py         # 模型评估与解释
 │
+├── app.py                    # Flask API服务
 ├── requirements.txt          # Python依赖清单
 └── README.md                 # 项目主文档
 ```

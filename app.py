@@ -1,6 +1,6 @@
-# src/app.py
+# app.py
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import joblib
 import pandas as pd
 import numpy as np
@@ -11,11 +11,9 @@ app = Flask(__name__)
 
 # 获取当前文件的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
-# 构建项目根目录路径
-project_root = os.path.dirname(current_dir)
 # 模型文件路径
-model_path = os.path.join(project_root, "models", "footprint_model.keras")
-preprocessor_path = os.path.join(project_root, "models", "preprocessor.pkl")
+model_path = os.path.join(current_dir, "models", "footprint_model.keras")
+preprocessor_path = os.path.join(current_dir, "models", "preprocessor.pkl")
 
 # 加载模型和预处理器
 model = tf.keras.models.load_model(model_path)
@@ -50,5 +48,11 @@ def predict():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
+@app.route('/')
+def home_page():
+    return render_template('index.html')
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    debug = True
+    host = '0.0.0.0' if debug else '127.0.0.1'
+    app.run(debug=debug, host=host, port=5000)

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>足迹特征分析系统</title>
+    <style>
+        :root {
+            --primary: #2b6cb0;
+            --primary-hover: #2c5282;
+            --bg: #f7fafc;
+            --text: #2d3748;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.4;
+            color: var(--text);
+            background: white;
+            padding: 0.5rem;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 1rem 0;
+            color: var(--primary);
+            font-size: clamp(1.3rem, 5vw, 2rem);
+        }
+
+        .form-section {
+            background: var(--bg);
+            border-radius: 10px;
+            padding: 0.8rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+            margin: 0.5rem 0;
+        }
+
+        @media (min-width: 640px) {
+            .input-group {
+                flex-direction: row;
+                align-items: center;
+                margin: 0.8rem 0;
+                gap: 1rem;
+            }
+        }
+
+        label {
+            font-weight: 500;
+            flex: 0 0 100px;
+            font-size: 0.85rem;
+            color: #4a5568;
+        }
+
+        input, select {
+            flex: 1;
+            padding: 0.6rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-height: 42px;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(43, 108, 176, 0.1);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        @media (min-width: 640px) {
+            button {
+                width: auto;
+                margin-left: auto;
+                padding: 0.7rem 2rem;
+            }
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .result-card h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .result-item {
+            margin: 0.8rem 0;
+        }
+
+        .progress-bar {
+            height: 16px;
+            background: var(--bg);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 0.4rem 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.5s ease;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn-secondary {
+            background: #718096;
+        }
+        
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
+        /* 移动端优化 */
+        @media (max-width: 640px) {
+            .input-group {
+                flex-direction: row !important;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 0.4rem 0;
+            }
+
+            label {
+                flex: 0 0 80px;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+
+            input, select {
+                min-height: 36px;
+                padding: 0.4rem 0.6rem;
+                font-size: 0.8rem;
+            }
+
+            button {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .result-card {
+                padding: 0.8rem;
+            }
+        }
+
+        @media (max-width: 375px) {
+            label {
+                flex-basis: 70px;
+                font-size: 0.7rem;
+            }
+
+            input, select {
+                min-height: 34px;
+                font-size: 0.75rem;
+            }
+
+            .input-group {
+                margin: 0.3rem 0;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>足迹特征分析</h1>
+        
+        <div class="form-section">
+            <div class="input-group">
+                <label for="foot_length">脚印长度 (cm):</label>
+                <input type="number" id="foot_length" step="0.1" min="20" max="35" required>
+            </div>
+
+            <div class="input-group">
+                <label for="foot_width">脚印宽度 (cm):</label>
+                <input type="number" id="foot_width" step="0.1" min="8" max="12" required>
+            </div>
+
+            <div class="input-group">
+                <label for="arch_height">足弓高度 (cm):</label>
+                <input type="number" id="arch_height" step="0.1" min="2" max="4.5" required>
+            </div>
+
+            <div class="input-group">
+                <label for="depth_diff">深度差 (mm):</label>
+                <input type="number" id="depth_diff" step="0.1" min="-5" max="5" required>
+            </div>
+
+            <div class="input-group">
+                <label for="pressure_offset_x">压力偏移 (mm):</label>
+                <input type="number" id="pressure_offset_x" step="0.1" min="-5" max="5" required>
+            </div>
+
+            <div class="input-group">
+                <label for="ground_type">地面类型:</label>
+                <select id="ground_type" required>
+                    <option value="concrete">水泥地</option>
+                    <option value="wet_soil">湿泥土</option>
+                    <option value="dry_soil">干泥土</option>
+                    <option value="sand">沙地</option>
+                    <option value="grass">草地</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="humidity">环境湿度 (%):</label>
+                <input type="number" id="humidity" min="0" max="100" required>
+            </div>
+
+            <div class="input-group">
+                <label for="depth">凹陷深度 (mm):</label>
+                <input type="number" id="depth" step="0.1" min="0.5" max="8" required>
+            </div>
+
+            <div class="input-group">
+                <label for="pressure_avg">平均压力 (kPa):</label>
+                <input type="number" id="pressure_avg" step="0.1" min="70" max="100" required>
+            </div>
+
+            <div class="button-group">
+                <button onclick="analyzeFootprint()">开始分析</button>
+                <button class="btn-secondary" onclick="fillSampleData()">加载样本数据</button>
+                <button class="btn-secondary" onclick="resetForm()">重置表单</button>
+            </div>
+        </div>
+        </div>
+
+        <div class="result-card" id="resultSection">
+            <h3>分析结果</h3>
+            
+            <div class="result-item">
+                <p>预测身高: <strong id="heightResult">-</strong> cm</p>
+                <p>预测体重: <strong id="weightResult">-</strong> kg</p>
+            </div>
+
+            <div class="result-item">
+                <h4>腿型概率分布</h4>
+                <div class="leg-type">
+                    <p>正常腿型: <span class="prob-value">0%</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="background-color: #48bb78"></div>
+                    </div>
+                </div>
+                <div class="leg-type">
+                    <p>O型腿: <span class="prob-value">0%</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="background-color: #f6ad55"></div>
+                    </div>
+                </div>
+                <div class="leg-type">
+                    <p>X型腿: <span class="prob-value">0%</span></p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="background-color: #f56565"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeFootprint() {
+            const formData = {
+                foot_length: parseFloat(document.getElementById('foot_length').value),
+                foot_width: parseFloat(document.getElementById('foot_width').value),
+                arch_height: parseFloat(document.getElementById('arch_height').value),
+                depth_diff: parseFloat(document.getElementById('depth_diff').value),
+                pressure_offset_x: parseFloat(document.getElementById('pressure_offset_x').value),
+                ground_type: document.getElementById('ground_type').value,
+                humidity: parseInt(document.getElementById('humidity').value),
+                depth: parseFloat(document.getElementById('depth').value),
+                pressure_avg: parseFloat(document.getElementById('pressure_avg').value)
+            };
+
+            try {
+                const response = await fetch('http://185.244.0.122:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) throw new Error(`HTTP错误: ${response.status}`);
+                
+                const result = await response.json();
+                updateResults(result);
+            } catch (error) {
+                console.error('分析失败:', error);
+                alert(`分析失败: ${error.message}`);
+            }
+        }
+
+        function updateResults(data) {
+            // 更新基础信息
+            document.getElementById('heightResult').textContent = data.height.toFixed(1);
+            document.getElementById('weightResult').textContent = data.weight.toFixed(1);
+
+            // 更新腿型概率
+            const probabilities = data.leg_type_probs;
+            document.querySelectorAll('.leg-type').forEach((item, index) => {
+                const percent = (probabilities[index] * 100).toFixed(1) + '%';
+                item.querySelector('.prob-value').textContent = percent;
+                item.querySelector('.progress-fill').style.width = percent;
+            });
+
+            // 显示结果区域
+            document.getElementById('resultSection').style.display = 'block';
+        }
+        
+        const sampleData = [
+            {
+                foot_length: 27.4,
+                foot_width: 10.8,
+                arch_height: 2.7,
+                depth_diff: 2.1,
+                pressure_offset_x: -1.6,
+                ground_type: "wet_soil",
+                humidity: 54,
+                depth: 4.1,
+                pressure_avg: 100.0
+            },
+            {
+                foot_length: 27.3,
+                foot_width: 11.6,
+                arch_height: 2.5,
+                depth_diff: 2.8,
+                pressure_offset_x: -2.3,
+                ground_type: "concrete",
+                humidity: 50,
+                depth: 0.4,
+                pressure_avg: 100.0
+            },
+            {
+                foot_length: 27.3,
+                foot_width: 9.5,
+                arch_height: 2.9,
+                depth_diff: 2.9,
+                pressure_offset_x: -1.3,
+                ground_type: "grass",
+                humidity: 26,
+                depth: 1.6,
+                pressure_avg: 91.1
+            },
+            {
+                foot_length: 27.4,
+                foot_width: 10.9,
+                arch_height: 2.6,
+                depth_diff: 2.7,
+                pressure_offset_x: -1.5,
+                ground_type: "dry_soil",
+                humidity: 52,
+                depth: 2.5,
+                pressure_avg: 100.0
+            },
+            {
+                foot_length: 27.4,
+                foot_width: 9.2,
+                arch_height: 2.8,
+                depth_diff: 1.8,
+                pressure_offset_x: -2.3,
+                ground_type: "sand",
+                humidity: 47,
+                depth: 3.4,
+                pressure_avg: 88.2
+            }
+        ];
+
+        let currentDataIndex = 0;
+        function fillSampleData() {
+            const data = sampleData[currentDataIndex];
+            
+            // 填充数值型输入
+            document.getElementById('foot_length').value = data.foot_length;
+            document.getElementById('foot_width').value = data.foot_width;
+            document.getElementById('arch_height').value = data.arch_height;
+            document.getElementById('depth_diff').value = data.depth_diff;
+            document.getElementById('pressure_offset_x').value = data.pressure_offset_x;
+            document.getElementById('humidity').value = data.humidity;
+            document.getElementById('depth').value = data.depth;
+            document.getElementById('pressure_avg').value = data.pressure_avg;
+            
+            // 设置下拉菜单
+            const groundTypeSelect = document.getElementById('ground_type');
+            groundTypeSelect.value = data.ground_type;
+            
+            // 更新索引（循环使用）
+            currentDataIndex = (currentDataIndex + 1) % sampleData.length;
+        }
+
+        function resetForm() {
+            // 清空所有输入
+            document.querySelectorAll('input').forEach(input => {
+                if(input.type === 'number') input.value = '';
+            });
+            
+            // 重置下拉菜单
+            document.getElementById('ground_type').selectedIndex = 0;
+            
+            // 隐藏结果
+            document.getElementById('resultSection').style.display = 'none';
+            
+            // 重置索引
+            currentDataIndex = 0;
+        }
+    </script>
+</body>
+</html>
