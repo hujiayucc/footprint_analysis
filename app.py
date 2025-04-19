@@ -1,6 +1,7 @@
 # app.py
 import os
 from flask import Flask, request, jsonify, render_template, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 import joblib
 import pandas as pd
 import numpy as np
@@ -8,6 +9,16 @@ import tensorflow as tf
 
 # 初始化应用
 app = Flask(__name__)
+
+# 增强代理设置 (关键修改)
+app.wsgi_app = ProxyFix(
+    app.wsgi_app,
+    x_for=1,        # 信任 1 层代理的 X-Forwarded-For
+    x_proto=1,      # 信任 1 层代理的 X-Forwarded-Proto
+    x_host=1,       # 信任 1 层代理的 X-Forwarded-Host
+    x_port=1,       # 信任 1 层代理的 X-Forwarded-Port
+    x_prefix=1      # 信任 1 层代理的 X-Forwarded-Prefix
+)
 
 # 获取当前文件的绝对路径
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -54,6 +65,6 @@ def home_page():
     return render_template('index.html', api_url=api_url)
 
 if __name__ == '__main__':
-    debug = True
+    debug = False
     host = '0.0.0.0' if debug else '127.0.0.1'
     app.run(debug=debug, host=host, port=5000)
