@@ -87,7 +87,7 @@ python -m src.data_preparation --count 1000 --min_height 150 --max_height 180
 python -m src.model_training
 
 # 启动API服务
-python -m src.app
+python -m app
 ```
 
 ### API调用
