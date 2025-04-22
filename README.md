@@ -53,6 +53,9 @@ footprint-analysis/
 │   ├── model_training.py     # 模型构建与训练
 │   └── evaluation.py         # 模型评估与解释
 │
+│
+├── templates/                # 模板文件夹
+├── static/                   # 静态文件夹
 ├── app.py                    # Flask API服务
 ├── requirements.txt          # Python依赖清单
 └── README.md                 # 项目主文档

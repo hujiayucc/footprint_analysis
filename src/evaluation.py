@@ -2,28 +2,16 @@
 import os
 import sys
 import joblib
-import logging
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from config import logging, BASE_DIR
 from sklearn.metrics import mean_absolute_error, accuracy_score, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 import matplotlib.font_manager as fm
 
 # ================== 初始化配置 ==================
-# 配置日志记录
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(asctime)s] [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler("run.log", encoding="utf-8"),
-        logging.StreamHandler()
-    ]
-)
-
-# ================== 路径配置 ==================
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "footprint_model.keras")
 PREPROCESSOR_PATH = os.path.join(BASE_DIR, "models", "preprocessor.pkl")
 DATA_PATH = os.path.join(BASE_DIR, "data", "raw", "footprint_data.csv")
@@ -32,6 +20,7 @@ FONT_PATH = os.path.join(BASE_DIR, "fonts", "MiSansVF.ttf")
 
 # 创建必要目录
 os.makedirs(REPORT_DIR, exist_ok=True)
+
 
 # ================== 字体配置 ==================
 def configure_font():
@@ -44,11 +33,11 @@ def configure_font():
         # 注册字体到matplotlib
         fm.fontManager.addfont(FONT_PATH)
         custom_font = fm.FontProperties(fname=FONT_PATH)
-        
+
         # 设置全局字体
         plt.rcParams['font.sans-serif'] = [custom_font.get_name()]
         plt.rcParams['axes.unicode_minus'] = False
-        
+
         logging.info("✅ 成功加载自定义字体")
         return custom_font
     except Exception as e:
@@ -57,6 +46,7 @@ def configure_font():
         plt.rcParams['font.sans-serif'] = ['SimHei']  # Windows系统字体
         plt.rcParams['axes.unicode_minus'] = False
         return None
+
 
 # ================== 可视化函数 ==================
 def generate_visualizations(y_true, y_pred_reg, y_cls_true, y_cls_pred, font_prop):
@@ -99,9 +89,9 @@ def generate_visualizations(y_true, y_pred_reg, y_cls_true, y_cls_pred, font_pro
         plt.subplot(2, 3, 5)
         cm = confusion_matrix(y_cls_true, np.argmax(y_cls_pred, axis=1))
         sns.heatmap(
-            cm, 
-            annot=True, 
-            fmt='d', 
+            cm,
+            annot=True,
+            fmt='d',
             cmap='Blues',
             xticklabels=['正常', 'O型腿', 'X型腿'],
             yticklabels=['正常', 'O型腿', 'X型腿'],
@@ -118,6 +108,7 @@ def generate_visualizations(y_true, y_pred_reg, y_cls_true, y_cls_pred, font_pro
     except Exception as e:
         logging.error(f"⚠️ 可视化生成失败: {str(e)}", exc_info=True)
 
+
 # ================== 评估函数 ==================
 def evaluate():
     try:
@@ -130,7 +121,7 @@ def evaluate():
             raise FileNotFoundError(f"模型文件未找到: {MODEL_PATH}")
         if not os.path.exists(PREPROCESSOR_PATH):
             raise FileNotFoundError(f"预处理器文件未找到: {PREPROCESSOR_PATH}")
-        
+
         model = tf.keras.models.load_model(MODEL_PATH)
         preprocessor = joblib.load(PREPROCESSOR_PATH)
 
@@ -139,7 +130,7 @@ def evaluate():
         if not os.path.exists(DATA_PATH):
             raise FileNotFoundError(f"数据文件未找到: {DATA_PATH}")
         df = pd.read_csv(DATA_PATH)
-        
+
         # 验证必要列是否存在
         required_columns = ["height", "weight", "leg_type"]
         if not all(col in df.columns for col in required_columns):
@@ -153,7 +144,7 @@ def evaluate():
         # 3. 预处理
         logging.info("⚙ 执行数据预处理...")
         X_processed = preprocessor.transform(X)
-        
+
         # 验证预处理维度
         if X_processed.shape[1] != 13:
             raise ValueError(f"预处理维度异常: 预期13列，实际{X_processed.shape[1]}列")
@@ -184,6 +175,7 @@ def evaluate():
     except Exception as e:
         logging.error("‼️ 评估流程失败", exc_info=True)
         sys.exit(1)
+
 
 if __name__ == "__main__":
     evaluate()
